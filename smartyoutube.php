@@ -4,7 +4,7 @@ Plugin Name: Smart Youtube PRO
 Plugin URI: http://www.prelovac.com/vladimir/wordpress-plugins/smart-youtube
 Description: Insert YouTube videos in posts, comments and RSS feeds with ease and full customization.
 Author: Vladimir Prelovac
-Version: 4.1.7
+Version: 4.2.0
 Author URI: http://www.prelovac.com/vladimir/
 
 
@@ -124,7 +124,6 @@ class SmartYouTube_PRO {
 	}
 	
 	function post_header() {
-		if ( is_singular() ) {
 			global $wp_query;
 			$the_content = $wp_query->post->post_content;
 			$char_codes = array( '&#215;', '&#8211;' );
@@ -146,11 +145,10 @@ class SmartYouTube_PRO {
 		</script>
 		<?php
 			}
-		}
 	}
 	
 	function load_scripts() {
-		if ( $this->options["colorbox"] == 'on' && is_singular() ) {
+		if ( $this->options["colorbox"] == 'on' ) {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'colorbox' );
 		}
@@ -160,7 +158,7 @@ class SmartYouTube_PRO {
 		$style_path = $this->plugin_url . '/themes/theme' . $this->options['colorbox_theme'] . '/colorbox.css';
 		wp_register_style( 'colorbox', $style_path );
 		
-		if ( $this->options["colorbox"] == 'on' && is_singular() ) {
+		if ( $this->options["colorbox"] == 'on' ) {
 			wp_enqueue_style( 'colorbox' );
 		}
 	}
@@ -332,7 +330,7 @@ class SmartYouTube_PRO {
 <link rel="stylesheet" type="text/css" href="' . $this->plugin_url . '/styleyt.css" />';
 		
 		$imgpath = $this->plugin_url.'/i';
-		$actionurl = $_SERVER['REQUEST_URI'];
+		$actionurl = stripslashes(htmlentities(strip_tags($_SERVER['REQUEST_URI'])));
 		$nonce = wp_create_nonce( 'smart-youtube' );
 		$example = htmlentities( '<div style="float:left;margin-right: 10px;">{video}</div>' );
 		
@@ -563,7 +561,7 @@ class SmartYouTube_PRO {
 		}
 		
 		$imgpath = $this->plugin_url . '/i';
-		$actionurl = $_SERVER['REQUEST_URI'];
+		$actionurl = stripslashes(htmlentities(strip_tags($_SERVER['REQUEST_URI'])));
 		
 		$this->options = $this->get_options();
 	?>
@@ -612,7 +610,7 @@ class SmartYouTube_PRO {
 		
 		$upd_msg = "";
 		
-		$actionurl = $_SERVER['REQUEST_URI'];
+		$actionurl = stripslashes(htmlentities(strip_tags($_SERVER['REQUEST_URI'])));
 		$nonce = wp_create_nonce( 'smart-youtube' );
 		
 		$lic_msg = '<p>Welcome to ' . __( 'Smart YouTube PRO', 'smart-youtube' ) . '.</p>';
@@ -1048,10 +1046,10 @@ EOT;
 <span class="youtube"><iframe class="youtube-player" src="$video_url" width="$width" height="$height" frameborder="0" allowfullscreen></iframe></span>
 EOT;
 			} elseif ( $valid == 'off' || strpos( $_SERVER['HTTP_USER_AGENT'], 'iPhone' ) === TRUE || strpos( $_SERVER['HTTP_USER_AGENT'], 'iPod' ) === TRUE || strpos( $_SERVER['HTTP_USER_AGENT'], 'iPad' ) === TRUE ) {
-				if ( $context == 'post' && $colorbox == 'on' && is_singular() ) {
+				if ( $context == 'post' && $colorbox == 'on' ) {
 					$img_url = htmlspecialchars( "http://img.youtube.com/vi/$file/0.jpg" );
 					$yte_tag = <<<EOT
-<a class="colorbox_video" href="$video_url"><img width="$width" height="$height" src="$img_url" /></iframe></span>
+<a class="colorbox_video" href="$video_url"><img width="$width" height="$height" src="$img_url" /></a></span>
 EOT;
 				} else if ( $this->options['iframe'] == 'on' )
 					$yte_tag = <<<EOT
@@ -1063,10 +1061,10 @@ EOT;
 <param name="allowFullScreen" value="true" /><embed wmode="opaque" src="$video_url" type="application/x-shockwave-flash" allowfullscreen="true" width="$width" height="$height"></embed><param name="wmode" value="opaque" /></object></span>
 EOT;
 			} else {
-				if ( $context == 'post' && $colorbox == 'on' && is_singular() ) {
+				if ( $context == 'post' && $colorbox == 'on' ) {
 					$img_url = htmlspecialchars( "http://img.youtube.com/vi/$file/0.jpg" );
 					$yte_tag = <<<EOT
-<a class="colorbox_video" href="$video_url"><img width="$width" height="$height" src="$img_url" /></iframe></span>
+<a class="colorbox_video" href="$video_url"><img width="$width" height="$height" src="$img_url" /></a></span>
 EOT;
 				} else if ( $this->options['iframe'] == 'on' ) {
 					$yte_tag = <<<EOT
@@ -1166,10 +1164,10 @@ EOT;
 <img src="$img_url" height="$height" width="$width" />
 EOT;
 			}
-		} else if ( $context == 'post' && $colorbox == 'on' && is_singular() ) {
+		} else if ( $context == 'post' && $colorbox == 'on' ) {
 			$img_url = htmlspecialchars( "http://www.metacafe.com/thumb/$file.jpg" );
 			$yte_tag = <<<EOT
-<a class="colorbox_video" href="http://www.metacafe.com/fplayer/$file/$name.swf"><img width="$width" height="$height" src="$img_url" /></iframe></span>
+<a class="colorbox_video" href="http://www.metacafe.com/fplayer/$file/$name.swf"><img width="$width" height="$height" src="$img_url" /></a></span>
 EOT;
 		} else {
 			$yte_tag = <<<EOT
@@ -1247,7 +1245,7 @@ EOT;
 EOT;
 			}
 		}
-		else if ( $context == 'post' && $colorbox == 'on' && is_singular() ) {
+		else if ( $context == 'post' && $colorbox == 'on' ) {
 			$thumbs = unserialize( file_get_contents( "http://vimeo.com/api/v2/video/$file.php" ) );
 			$img_url = htmlspecialchars( $thumbs[0]['thumbnail_large'] );
 			$yte_tag = <<<EOT
@@ -1297,10 +1295,10 @@ EOT;
 <img src="$img_url" height="$height" width="$width" />
 EOT;
 			}
-		} else if ( $context == 'post' && $colorbox == 'on' && is_singular() ) {
+		} else if ( $context == 'post' && $colorbox == 'on' ) {
 			$img_url = htmlspecialchars( $this->plugin_url . '/img/default.jpg' );
 			$yte_tag = <<<EOT
-<a class="colorbox_video" href="http://www.liveleak.com/e/$file"><img width="$width" height="$height" src="$img_url" /></iframe></span>
+<a class="colorbox_video" href="http://www.liveleak.com/e/$file"><img width="$width" height="$height" src="$img_url" /></a></span>
 EOT;
 		} else {
 			$yte_tag = <<<EOT
@@ -1346,10 +1344,10 @@ EOT;
 <img src="$img_url" height="$height" width="$width" />
 EOT;
 			}
-		} else if ( $context == 'post' && $colorbox == 'on' && is_singular() ) {
+		} else if ( $context == 'post' && $colorbox == 'on' ) {
 			$img_url = htmlspecialchars( $this->plugin_url . '/img/default.jpg' );
 			$yte_tag = <<<EOT
-<a class="colorbox_video" href="http://www.facebook.com/v/$file"><img width="$width" height="$height" src="$img_url" /></iframe></span>
+<a class="colorbox_video" href="http://www.facebook.com/v/$file"><img width="$width" height="$height" src="$img_url" /></a></span>
 EOT;
 		} else {
 			$yte_tag = <<<EOT
