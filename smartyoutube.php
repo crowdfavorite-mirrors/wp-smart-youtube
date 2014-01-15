@@ -4,7 +4,7 @@ Plugin Name: Smart Youtube PRO
 Plugin URI: http://www.prelovac.com/vladimir/wordpress-plugins/smart-youtube
 Description: Insert YouTube videos in posts, comments and RSS feeds with ease and full customization.
 Author: Vladimir Prelovac
-Version: 4.2.0
+Version: 4.2.1
 Author URI: http://www.prelovac.com/vladimir/
 
 
@@ -514,6 +514,7 @@ class SmartYouTube_PRO {
 							<select id="disp_excerpt_align" name="excerpt_align">
 								<option value="left" <?php echo ( ( $excerpt_align == 'left' ) ? 'selected="yes"' : '' ); ?>><?php _e( 'Left', 'smart-youtube' ); ?></option>
 								<option value="right" <?php echo ( ( $excerpt_align == 'right' ) ? 'selected="yes"' : '' ); ?>><?php _e( 'Right', 'smart-youtube' ); ?></option>
+                                <option value="center" <?php echo ( ( $excerpt_align == 'center' ) ? 'selected="yes"' : '' ); ?>><?php _e( 'Center', 'smart-youtube' ); ?></option>                                
 							</select>
 						</div>
 					</div>
@@ -913,7 +914,11 @@ EOT;
 				return $the_content;
 			}
 			if ( isset( $result ) ) {
-				$the_content = '<div style="float:' . $this->options["excerpt_align"] . ';padding-' . ( $this->options["excerpt_aign"] == 'left' ? 'right' : 'left' ) . ':10px;">' . $result . '</div>' . $the_content . '<div style="clear:both"></div>';
+                if ($this->options['excerpt_align'] == 'center') {
+                    $the_content = '<div style="float:' . $this->options["excerpt_align"] . ';padding-' . ( $this->options["excerpt_aign"] == 'left' ? 'right' : 'left' ) . ':10px;">' . $result . '</div>' . $the_content . '<div style="clear:both"></div>';
+                }else {
+                    $the_content = '<div style="padding: 10px 0">' . $result . '</div>' . $the_content . '<div style="clear:both"></div>';
+                }
 			}
 		}
 		
